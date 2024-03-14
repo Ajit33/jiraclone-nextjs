@@ -11,7 +11,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 enum BoardType {
@@ -32,9 +32,9 @@ model Board {
   title       String
   description String?
   startDate   DateTime
-  endTime     DateTime
-  Columns     BoardColumn[]
-  BoardTicket BoardTicket[]
+  endDate     DateTime
+  columns     BoardColumn[]
+  tickets     BoardTicket[]
 }
 
 model BoardColumn {
@@ -57,9 +57,9 @@ model BoardTicket {
   boardId       String
   storyPoints   Int?
   position      Int
-  Comments      Comment[]
-  assignedUser  User         @relation("assinged", fields: [assignTo], references: [id])
-  assignTo      String
+  comments      Comment[]
+  assignedUser  User         @relation("assigned", fields: [assignedTo], references: [id])
+  assignedTo    String
   reportedUser  User         @relation("reported", fields: [reportedBy], references: [id])
   reportedBy    String
 }
@@ -75,12 +75,12 @@ model Comment {
 }
 
 model User {
-  id             String        @id @default(cuid())
-  name           String
-  email          String
-  emailVerified  Boolean
-  image          String?
-  Comments       Comment[]
-  assignedTicket BoardTicket[] @relation("assinged")
-  reportedTicket BoardTicket[] @relation("reported")
+  id              String        @id @default(cuid())
+  name            String
+  email           String        @unique
+  emailVerified   Boolean?
+  image           String?
+  comments        Comment[]
+  assignedTicket  BoardTicket[] @relation("assigned")
+  reportedTickets BoardTicket[] @relation("reported")
 }
