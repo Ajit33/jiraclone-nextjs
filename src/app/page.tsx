@@ -1,4 +1,5 @@
-"use client"
+'use client'
+
 
 import { Button } from '@/components/button'
 import { signIn } from 'next-auth/react'
@@ -10,8 +11,8 @@ export default function Home() {
       <Button onClick={signIn}>Login</Button>
       <br />
       {status}
-      <pre>{JSON.stringify(session)}</pre>
-
+      <pre >{JSON.stringify(session)}</pre> 
+  
     </div>
   )
 }
