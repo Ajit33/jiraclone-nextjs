@@ -1,66 +1,52 @@
-"use client";
+"use client"
+import { HamburgerMenuIcon } from '@radix-ui/react-icons'
+import type { ReactNode } from 'react';
+import useWindowDimensions from '@/hooks/useWindowDimensions';
+import { useEffect, useState } from 'react'
+import { NavAvatar } from './NavAvatar'
+import ThemeToggle from './ThemeToggle'
 
-import useWindowDimensions from "@/hooks/useWindowDimensions";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import { ReactNode, useEffect, useState } from "react";
-import { NavAvatar } from "./NavAvatar";
-import ThemeToggle from "./ThemeToggle";
-import { navData } from "@/lib/navData";
-import { Avatar } from "@radix-ui/react-avatar";
-import { get } from '@vercel/edge-config';
-import { NavDataType } from "./nav.type";
+import { NavDataType } from './nav.type';
+import { useSession } from 'next-auth/react';
 
-interface Composition{
-  children:ReactNode
+// import { navItemMap } from './navItemMap'
+
+
+
+interface Composition {
+    children: ReactNode
 }
 
+const NavContainer = (props: Composition) => {
+    const { children } = props
+    const { isDesktop } = useWindowDimensions()
+    const [showNav, toggleNav] = useState(false)
 
+    useEffect(() => {
+        toggleNav(isDesktop)
+    }, [isDesktop])
+    return (
+        <div className="bg-navBg fixed w-full z-[1]">
+            {!isDesktop && <HamburgerMenuIcon onClick={() => toggleNav(!showNav)} height={30} width={30} className='ml-auto my-3 mr-3 text-white cursor-pointer' data-testid="hamburger" />}
+            {showNav && children}
+        </div>
+    )
+}
 
-
-const NavContainer = (props:Composition) => {
-  const { children } = props;
-  const {isDesktop}=useWindowDimensions()
- const [showNav,toggleNav]=useState(false)
- useEffect(() => {
-  toggleNav(isDesktop)
-}, [isDesktop])
-  return (
-    <div className="bg-navBg fixed w-full">
-      {!isDesktop && <HamburgerMenuIcon onClick={()=>toggleNav(!showNav)} height={30} width={30} className="ml-auto my-3 mr-3 text-white cursor-pointer" />}
-      {showNav && children}
+const NavGroup = (props: Composition) => {
+    const { children } = props
+    return <div className="flex flex-col sm:flex-row sm:justify-between items-center">
+        {children}
     </div>
-  );
-};
+}
 
-const NavGroup = (props:Composition) => {
-  const { children } = props;
-  return (
-    <div className=" flex flex-col sm:flex-row sm:justify-between items-center">
-      {children}
+const NavRenderer = (props: Composition) => {
+    const { children } = props
+    return <div className="h-screen sm:h-[60px] flex flex-col sm:flex-row items-center sm:justify-between border-b border-base">
+        {children}
     </div>
-  );
-};
+}
 
-const NavRenderer = (props:Composition) => {
-  const { children } = props;
-  return (
-    <div
-      className="
-        h-screen
-        sm:h-[60px]
-        flex
-        flex-col 
-        items-center
-        sm:flex-row
-        sm:justify-between
-        border-b 
-        border-base      
-        "
-    >
-      {children}
-    </div>
-  );
-};
 const NavLogo = (props:Composition) => {
  const {children}=props
   return (
