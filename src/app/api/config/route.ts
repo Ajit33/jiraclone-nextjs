@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     return Response.json(
       {
         data: {
-           navData   
+          navData,
         },
       },
       { status: 200 }
