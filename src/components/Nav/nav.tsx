@@ -9,7 +9,9 @@ import ThemeToggle from './ThemeToggle'
 import { NavDataType } from './nav.type';
 import { useSession } from 'next-auth/react';
 
-// import { navItemMap } from './navItemMap';
+// import { navItemMap } from './navItemMap'
+
+
 
 interface Composition {
     children: ReactNode
@@ -45,64 +47,69 @@ const NavRenderer = (props: Composition) => {
     </div>
 }
 
-const NavLogo = (props: Composition) => {
-    const { children } = props
-    return <div className="text-white sm:ml-3">
-        {children}
+const NavLogo = (props:Composition) => {
+ const {children}=props
+  return (
+    <div
+      className="
+   background-nav
+   text-white
+   sm:ml-3
+  "
+    >
+      {children}
     </div>
-}
-
-interface NavItemProps extends Composition {
-    authOnly?: boolean;
-}
-
-const NavItem = (props: NavItemProps) => {
-    const { status } = useSession()
-    const { children, authOnly = false } = props
-    if (authOnly && status !== 'authenticated') return <></>
-    return <div className="background-nav text-white sm:mr-3 p-2 border rounded font-semibold border-none">
-        {children}
+  );
+};
+const NavItem = (props:Composition) => {
+  const { children } = props;
+  return (
+    <div
+      className="
+        background-nav
+      text-white 
+        sm:mr-3 
+        rounded
+        px-3
+        py-1
+        "
+    >
+      {children}
     </div>
-}
+  );
+};
+const Navbar = () => {
+  const navItemMap={
+    logo:NavLogo,
+    item:NavItem,
+    avatar:NavAvatar,
+    themeToggle:ThemeToggle,
+};
+const [navbarData,setNavbarData]=useState<NavDataType>([])
+useEffect(()=>{
+ const fetchConfig=async()=>{
+ const response =await fetch('/api/config')
+ const {data}= await response.json()
+ const navData=data.navData as NavDataType
+ setNavbarData(navData)
+ 
+ }
+ fetchConfig();
+},[])
+  return (
+    <NavContainer>
+    <NavRenderer>
+      {navbarData.map((navGroup) => (
+        <NavGroup key={navGroup.id}>
+          {navGroup.items.map((navItem) => {
+            const Item = navItemMap[navItem.type] || (() => <></>);
+            return <Item key={navItem.id}>{navItem.content}</Item>;
+          })}
+        </NavGroup>
+      ))}
+    </NavRenderer>
+  </NavContainer>
+  );
+};
 
-interface NavbarInterface {
-    externalNavData?: null | NavDataType
-}
-
-const Navbar = (props: NavbarInterface) => {
-    const { externalNavData = null } = props
-    const navItemMap = {
-        logo: NavLogo,
-        item: NavItem,
-        avatar: NavAvatar,
-        themeToggle: ThemeToggle,
-    };
-    const [navbarData, setNavbarData] = useState<NavDataType>([])
-    useEffect(() => {
-        const fetchConfig = async () => {
-            const response = await fetch('/api/config')
-            const { data } = await response.json()
-            const navdata = data.navData as NavDataType
-            setNavbarData(navdata)
-        }
-        if (!externalNavData) {
-            fetchConfig()
-        } else {
-            setNavbarData(externalNavData)
-        }
-    }, [externalNavData])
-    return <NavContainer>
-        <NavRenderer>
-            {navbarData.map((navGroup) => {
-                return <NavGroup key={navGroup.id}>
-                    {navGroup.items.map((navItem) => {
-                        const Item = navItemMap[navItem.type] || <></>
-                        return <Item key={navItem.id}>{navItem.content}</Item>
-                    })}
-                </NavGroup>
-            })}
-        </NavRenderer>
-    </NavContainer>
-}
-
-export { Navbar, NavLogo, NavItem }
+export { Navbar,NavLogo,NavItem };

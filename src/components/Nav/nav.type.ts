@@ -1,4 +1,5 @@
-export interface NavGroupinterface{
+
+ export interface NavGroupinterface{
     id:number;
     items:NavItemInterface[];
 
